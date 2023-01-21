@@ -4,6 +4,7 @@ import buildGraphQLProvider from 'ra-data-graphql';
 import {DataProvider} from "ra-core";
 import defaultBuildQuery from './buildQuery';
 import {httpLink} from "./links/httpLink";
+import {operationNames as customOperationNames} from "./graphqlConventions"
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -12,6 +13,9 @@ const App = () => {
         buildGraphQLProvider({
             clientOptions: {
                 link: httpLink
+            },
+            introspection: {
+                operationNames: customOperationNames,
             },
             buildQuery: defaultBuildQuery
         })
@@ -24,8 +28,8 @@ const App = () => {
 
     return (
         <Admin dataProvider={dataProvider}>
-            <Resource name="Owner" list={ListGuesser}/>
-            <Resource name="PetType" list={ListGuesser}/>
+            <Resource name="OwnerDTO" list={ListGuesser} options={{ label: 'Owners' }}/>
+            <Resource name="PetTypeDTO" list={ListGuesser} options={{ label: 'Pet types' }}/>
         </Admin>
     )
 }

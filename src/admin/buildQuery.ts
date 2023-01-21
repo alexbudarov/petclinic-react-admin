@@ -11,20 +11,12 @@ export const buildQueryFactory = (
     getResponseParserImpl = getResponseParser
 ) => (introspectionResults: IntrospectionResult): BuildQuery => {
     const knownResources = introspectionResults.resources.map(r => r.type.name);
-    // todo determine resources using other convention
 
     const buildQuery: BuildQuery = (raFetchType, resourceName, params) => {
-        console.log('Introspection resources: ' + introspectionResults.resources);
-
         let resource = introspectionResults.resources.find(
             r => r.type.name === resourceName
         );
 
-        if (!resource && raFetchType === GET_LIST) {
-            resource = introspectionResults.resources.find(
-                r => r.type.name === (resourceName.toLowerCase() + 'List')
-            );
-        }
         if (resource) {
             console.log('Resource for ' + resourceName + ': ' + Object.keys(resource));
         }
