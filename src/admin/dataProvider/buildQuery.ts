@@ -17,10 +17,6 @@ export const buildQueryFactory = (
             r => r.type.name === resourceName
         );
 
-        if (resource) {
-            console.log('Resource for ' + resourceName + ': ' + Object.keys(resource));
-        }
-
         if (!resource) {
             throw new Error(
                 `Unknown resource ${resourceName}. Make sure it has been declared on your server side schema. Known resources are ${knownResources.join(

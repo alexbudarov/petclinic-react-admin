@@ -65,10 +65,8 @@ export default (introspectionResults: IntrospectionResult) => (
                 gqlTypes.selectionSet([
                     gqlTypes.field(
                         gqlTypes.name(queryType.name),
-                        gqlTypes.name('data'),
-                        args,
                         null,
-                        gqlTypes.selectionSet(fields)
+                        args,
                     ),
                 ]),
                 gqlTypes.name(queryType.name),
@@ -236,7 +234,10 @@ export const buildApolloArgs = (
 
 export const getArgType = (arg: IntrospectionInputValue): TypeNode => {
     const type = getFinalType(arg.type);
-    const required = isRequired(arg.type);
+    
+    // fix for delete mutation argument (improper nullable argument type was sent)
+    const required = isRequired(arg.type) || arg.type.kind === "NON_NULL";
+    
     const list = isList(arg.type);
 
     if (list) {
