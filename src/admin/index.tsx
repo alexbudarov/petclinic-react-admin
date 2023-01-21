@@ -13,6 +13,7 @@ import {PetTypeEdit} from "./pettype/PetTypeEdit";
 import {PetTypeCreate} from "./pettype/PetTypeCreate";
 import {OwnerEdit} from "./owner/OwnerEdit";
 import {OwnerCreate} from "./owner/OwnerCreate";
+import { QueryClient } from 'react-query';
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -34,8 +35,19 @@ const App = () => {
         return <div>Loading</div>;
     }
 
+    // disable annoying refetch
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                staleTime: 10000,
+                retry: false,
+                refetchOnWindowFocus: false,
+            },
+        },
+    });
+
     return (
-        <Admin dataProvider={dataProvider}>
+        <Admin dataProvider={dataProvider} queryClient={queryClient}>
             <Resource name="OwnerDTO"
                       list={OwnerList}
                       create={OwnerCreate}
