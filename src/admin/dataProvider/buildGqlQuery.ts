@@ -41,7 +41,7 @@ export default (introspectionResults: IntrospectionResult) => (
                         args,
                         null,
                         gqlTypes.selectionSet(fields)
-                    ),
+                    )/*, todo implement paging
                     gqlTypes.field(
                         gqlTypes.name(`_${queryType.name}Meta`),
                         gqlTypes.name('total'),
@@ -50,7 +50,7 @@ export default (introspectionResults: IntrospectionResult) => (
                         gqlTypes.selectionSet([
                             gqlTypes.field(gqlTypes.name('count')),
                         ])
-                    ),
+                    ),*/
                 ]),
                 gqlTypes.name(queryType.name),
                 apolloArgs

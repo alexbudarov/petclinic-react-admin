@@ -17,7 +17,9 @@ export default (introspectionResults: IntrospectionResult) => (
     ) {
         return {
             data: response.data.items.map(sanitizeResource),
-            total: response.data.total.count,
+            total: response.data.items.length
+            // todo paging
+            //  total: response.data.total.count,
         };
     }
 

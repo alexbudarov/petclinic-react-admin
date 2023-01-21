@@ -2,9 +2,9 @@ import {Admin, Resource, ListGuesser} from "react-admin";
 import {useEffect, useState} from "react";
 import buildGraphQLProvider from 'ra-data-graphql';
 import {DataProvider} from "ra-core";
-import defaultBuildQuery from './buildQuery';
+import defaultBuildQuery from './dataProvider/buildQuery';
 import {httpLink} from "./links/httpLink";
-import {operationNames as customOperationNames} from "./graphqlConventions"
+import {operationNames as customOperationNames} from "./dataProvider/graphqlConventions"
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
