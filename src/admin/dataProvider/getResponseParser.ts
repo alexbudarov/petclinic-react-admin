@@ -23,7 +23,9 @@ export default (introspectionResults: IntrospectionResult) => (
         };
     }
 
-    return { data: sanitizeResource(data.data) };
+    return {
+        data: (data?.data ? sanitizeResource(data.data) : null)
+    };
 };
 
 const sanitizeResource = (data: any) => {
