@@ -2,7 +2,7 @@ import {Create, SelectInput, SimpleForm, TextInput} from "react-admin";
 
 export const OwnerCreate = () => {
     return (
-        <Create>
+        <Create redirect="list">
             <SimpleForm>
                 <TextInput source="firstName" required/>
                 <TextInput source="lastName" required/>

@@ -2,7 +2,7 @@ import {Create, SelectInput, SimpleForm, TextInput} from "react-admin";
 
 export const PetTypeCreate = () => {
     return (
-        <Create>
+        <Create redirect="list">
             <SimpleForm>
                 <TextInput source="name" required={true}/>
                 <SelectInput source="defenseStatus" choices={[
