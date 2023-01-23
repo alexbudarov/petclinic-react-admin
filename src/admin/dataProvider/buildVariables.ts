@@ -27,6 +27,8 @@ export default (introspectionResults: IntrospectionResult) => (
     params: any,
     queryType: IntrospectionField
 ) => {
+    // todo for create and update, construct a "input" argument from input variables (?)
+
     const preparedParams = prepareParams(
         params,
         queryType,
@@ -300,8 +302,16 @@ const buildCreateUpdateVariables = (
     raFetchMethod,
     { id, data }: any,
     queryType: IntrospectionField
-) =>
-    Object.keys(data).reduce(
+) => {
+    // Amplicode create/update input param convention
+    const inputArg = queryType.args.find(a => a.name === 'input');
+    if (inputArg) {
+        return {
+            [inputArg.name]: data
+        };
+    }
+
+    return Object.keys(data).reduce(
         (acc, key) => {
             if (Array.isArray(data[key])) {
                 const arg = queryType.args.find(a => a.name === `${key}Ids`);
@@ -332,3 +342,4 @@ const buildCreateUpdateVariables = (
         },
         { id }
     );
+}
