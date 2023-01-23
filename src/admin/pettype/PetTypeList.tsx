@@ -1,4 +1,4 @@
-import {Datagrid, DeleteButton, EditButton, List, TextField} from "react-admin";
+import {Datagrid, DeleteWithConfirmButton, EditButton, List, TextField} from "react-admin";
 
 export const PetTypeList = () => {
     return (
@@ -8,7 +8,7 @@ export const PetTypeList = () => {
                 <TextField source="name" />
                 <TextField source="defenseStatus" />
                 <EditButton />
-                <DeleteButton/>
+                <DeleteWithConfirmButton confirmTitle="Confirm delete pet #%{id}"/>
             </Datagrid>
         </List>
     );
