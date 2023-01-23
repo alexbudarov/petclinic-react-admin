@@ -2,7 +2,7 @@ import {Edit, SelectInput, SimpleForm, TextInput} from "react-admin";
 
 export const OwnerEdit = () => {
     return (
-        <Edit>
+        <Edit mutationMode="pessimistic">
             <SimpleForm>
                 <TextInput source="id" disabled/>
                 <TextInput source="firstName" required/>
