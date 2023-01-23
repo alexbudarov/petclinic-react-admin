@@ -15,4 +15,11 @@ const isRequired = (
     return type.kind === TypeKind.NON_NULL;
 };
 
+export const isShallowRequired = (
+    type: IntrospectionType | IntrospectionListTypeRef | IntrospectionTypeRef
+) => {
+    return type.kind === TypeKind.NON_NULL;
+};
+
+
 export default isRequired;

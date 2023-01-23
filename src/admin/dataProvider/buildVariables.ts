@@ -20,6 +20,7 @@ import { IntrospectionResult, IntrospectedResource } from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import {IntrospectionInputTypeRef, IntrospectionInputValue} from "graphql/utilities/getIntrospectionQuery";
+import {DELETE_MANY} from "react-admin";
 
 export default (introspectionResults: IntrospectionResult) => (
     resource: IntrospectedResource,
@@ -27,8 +28,6 @@ export default (introspectionResults: IntrospectionResult) => (
     params: any,
     queryType: IntrospectionField
 ) => {
-    // todo for create and update, construct a "input" argument from input variables (?)
-
     const preparedParams = prepareParams(
         params,
         queryType,
@@ -61,6 +60,10 @@ export default (introspectionResults: IntrospectionResult) => (
 
             return variables;
         }
+        case DELETE_MANY: // deleteManyXxx(ids: [ID]!): Void
+            return {
+                ids: preparedParams.ids,
+            };
         case GET_ONE:
         case DELETE:
             return {
@@ -76,6 +79,7 @@ export default (introspectionResults: IntrospectionResult) => (
             );
         }
     }
+    return {};
 };
 
 const sanitizeValue = (type: IntrospectionType, value: any) => {

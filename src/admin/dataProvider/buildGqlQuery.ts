@@ -9,9 +9,11 @@ import {
 } from "graphql/utilities";
 import * as gqlTypes from 'graphql-ast-types-browser';
 import getFinalType from "./getFinalType";
-import {DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE, isRequired} from "react-admin";
+import {DELETE, DELETE_MANY, GET_LIST, GET_MANY, GET_MANY_REFERENCE} from "react-admin";
 import {ArgumentNode, TypeNode, VariableDefinitionNode} from "graphql/language";
 import isList from "./isList";
+import {IntrospectionListTypeRef} from "graphql/utilities/getIntrospectionQuery";
+import {isShallowRequired} from "./isRequired";
 
 
 export default (introspectionResults: IntrospectionResult) => (
@@ -58,7 +60,7 @@ export default (introspectionResults: IntrospectionResult) => (
         ]);
     }
 
-    if (raFetchMethod === DELETE) {
+    if (raFetchMethod === DELETE || raFetchMethod === DELETE_MANY) {
         return gqlTypes.document([
             gqlTypes.operationDefinition(
                 'mutation',
@@ -236,26 +238,24 @@ export const getArgType = (arg: IntrospectionInputValue): TypeNode => {
     const type = getFinalType(arg.type);
     
     // fix for delete mutation argument (improper nullable argument type was sent)
-    const required = isRequired(arg.type) || arg.type.kind === "NON_NULL";
+    const required = isShallowRequired(arg.type);
     
     const list = isList(arg.type);
 
+    const finalNode = gqlTypes.namedType(gqlTypes.name(type.name)); // T
+
     if (list) {
-        if (required) {
-            return gqlTypes.listType(
-                gqlTypes.nonNullType(
-                    gqlTypes.namedType(gqlTypes.name(type.name))
-                )
-            );
-        }
-        return gqlTypes.listType(gqlTypes.namedType(gqlTypes.name(type.name)));
+        const unwrappedType = (arg.type as IntrospectionListTypeRef).ofType;
+        const requiredInternal = isShallowRequired(unwrappedType);
+
+        const internalNode = requiredInternal ? gqlTypes.nonNullType(finalNode) : finalNode; // T! or T
+        const listNode = gqlTypes.listType(internalNode); // [T!] or [T]
+        return required ? gqlTypes.nonNullType(listNode) : listNode; // [T!]! or [T]! or [T!] or [T]
     }
 
     if (required) {
-        return gqlTypes.nonNullType(
-            gqlTypes.namedType(gqlTypes.name(type.name))
-        );
+        return gqlTypes.nonNullType(finalNode); // T!
     }
 
-    return gqlTypes.namedType(gqlTypes.name(type.name));
+    return finalNode; // T
 };

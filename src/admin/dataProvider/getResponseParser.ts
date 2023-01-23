@@ -2,6 +2,7 @@ import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
 import { IntrospectionResult, IntrospectedResource } from 'ra-data-graphql';
 import { IntrospectionField } from 'graphql';
 import { ApolloQueryResult } from '@apollo/client';
+import {DELETE_MANY} from "react-admin";
 
 export default (introspectionResults: IntrospectionResult) => (
     raFetchMethod: string,
@@ -20,6 +21,14 @@ export default (introspectionResults: IntrospectionResult) => (
             total: response.data.items.length
             // todo paging
             //  total: response.data.total.count,
+        };
+    }
+
+    if (
+        raFetchMethod === DELETE_MANY
+    ) {
+        return {
+            data: [] // todo we kinda should return list of actually deleted IDs
         };
     }
 

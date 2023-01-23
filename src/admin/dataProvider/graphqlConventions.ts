@@ -1,4 +1,4 @@
-import {GET_LIST} from "react-admin";
+import {DELETE_MANY, GET_LIST} from "react-admin";
 import {CREATE, DELETE, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE} from "ra-core";
 
 export const operationNames = {
@@ -9,6 +9,7 @@ export const operationNames = {
     [CREATE]: resource => `update${removeDtoSuffix(resource.name)}`, // FooDTO --> updateFoo
     [UPDATE]: resource => `update${removeDtoSuffix(resource.name)}`, // FooDTO --> updateFoo
     [DELETE]: resource => `delete${removeDtoSuffix(resource.name)}`, // FooDTO --> deleteFoo
+    [DELETE_MANY]: resource => `deleteMany${removeDtoSuffix(resource.name)}`, // FooDTO --> deleteManyFoo
 }
 
 function capitalize(string) {
