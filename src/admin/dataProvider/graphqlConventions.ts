@@ -2,7 +2,12 @@ import {DELETE_MANY, GET_LIST} from "react-admin";
 import {CREATE, DELETE, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE} from "ra-core";
 
 export const operationNames = {
-    [GET_LIST]: resource => `${decapitalize(removeDtoSuffix(resource.name))}List`, // FooDTO --> fooList
+    [GET_LIST]: resource => {
+        if (resource.name === 'OwnerDTO') {
+            return 'ownerListByNamesFilterOffsetPageSorted'
+        }
+        return `${decapitalize(removeDtoSuffix(resource.name))}List` // FooDTO --> fooList
+    },
     [GET_ONE]: resource => `${decapitalize(removeDtoSuffix(resource.name))}`, // FooDTO --> foo
     [GET_MANY]: resource => `${resource.name}`, // todo not implemented
     [GET_MANY_REFERENCE]: resource => `${resource.name}`, // todo not implemented

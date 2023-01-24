@@ -16,11 +16,28 @@ export default (introspectionResults: IntrospectionResult) => (
         raFetchMethod === GET_MANY ||
         raFetchMethod === GET_MANY_REFERENCE
     ) {
+        let items = response.data.items;
+
+        // no paging
+        if (items && Array.isArray(items)) {
+            return {
+                data: items.map(sanitizeResource),
+                total: items.length
+            };
+        }
+
+        // Amplicode convention for paging result
+        if (items && items.content && Array.isArray(items.content) && items.totalElements) {
+            return {
+                data: items.content.map(sanitizeResource),
+                total: items.totalElements
+            };
+        }
+
+        console.error("Unknown list response structure: " + items)
         return {
-            data: response.data.items.map(sanitizeResource),
-            total: response.data.items.length
-            // todo paging
-            //  total: response.data.total.count,
+            data: [],
+            total: 0
         };
     }
 

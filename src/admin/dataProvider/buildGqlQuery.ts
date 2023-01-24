@@ -26,13 +26,13 @@ export default (introspectionResults: IntrospectionResult) => (
     const apolloArgs = buildApolloArgs(queryType, variables);
     const args = buildArgs(queryType, variables);
     const metaArgs = buildArgs(queryType, metaVariables);
-    const fields = buildFields(introspectionResults)(resource.type.fields);
 
     if (
         raFetchMethod === GET_LIST ||
         raFetchMethod === GET_MANY ||
         raFetchMethod === GET_MANY_REFERENCE
     ) {
+        const fields = buildFieldsForListQuery(introspectionResults, resource.type.fields, queryType);
         return gqlTypes.document([
             gqlTypes.operationDefinition(
                 'query',
@@ -43,22 +43,15 @@ export default (introspectionResults: IntrospectionResult) => (
                         args,
                         null,
                         gqlTypes.selectionSet(fields)
-                    )/*, todo implement paging
-                    gqlTypes.field(
-                        gqlTypes.name(`_${queryType.name}Meta`),
-                        gqlTypes.name('total'),
-                        metaArgs,
-                        null,
-                        gqlTypes.selectionSet([
-                            gqlTypes.field(gqlTypes.name('count')),
-                        ])
-                    ),*/
+                    )
                 ]),
                 gqlTypes.name(queryType.name),
                 apolloArgs
             ),
         ]);
     }
+
+    const fields = buildFields(introspectionResults)(resource.type.fields);
 
     if (raFetchMethod === DELETE || raFetchMethod === DELETE_MANY) {
         return gqlTypes.document([
@@ -94,6 +87,51 @@ export default (introspectionResults: IntrospectionResult) => (
         ),
     ]);
 };
+
+export const buildFieldsForListQuery = (
+    introspectionResults: IntrospectionResult,
+    fields: ReadonlyArray<IntrospectionField>,
+    queryType: IntrospectionField
+) => {
+    const resourceFields = buildFields(introspectionResults)(fields);
+    const queryResultType = queryType.type
+
+    if (isList(queryResultType)) { // no paging
+        return resourceFields;
+    }
+
+    // paging with Amplicode conventions
+    // queryName(page: $page) {
+    //       content {
+    //         ... resource fields
+    //       }
+    //       totalElements
+    //     }
+    //   }
+    if (queryResultType.kind === 'OBJECT') {
+        const type = introspectionResults.types.find(t => t.name === queryResultType.name);
+        const typeFields = (type as IntrospectionObjectType).fields;
+
+        const objectFields = buildFields(introspectionResults)(typeFields)
+        return objectFields.map(f => {
+            if (f.name.value !== 'content') {
+                return f;
+            }
+
+            // replace the element, add internal selection set
+            return gqlTypes.field(
+                gqlTypes.name(f.name.value),
+                null,
+                null,
+                null,
+                gqlTypes.selectionSet(resourceFields)
+            )
+        });
+    }
+
+    console.error('Unknown query result type: ' + queryResultType)
+    return resourceFields;
+}
 
 export const buildFields = (
     introspectionResults: IntrospectionResult,

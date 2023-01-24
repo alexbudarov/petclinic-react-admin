@@ -191,8 +191,7 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
 ) => {
     let variables: Partial<{
         filter: { [key: string]: any };
-        page: number;
-        perPage: number;
+        page: { number: number, size: number };
         sortField: string;
         sortOrder: string;
     }> = { filter: {} };
@@ -288,11 +287,19 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
         }, {});
     }
 
+    // Amplicode pagination protocol
+    // page {
+    //   number: Int!
+    //   size: Int!
+    // }
     if (params.pagination) {
-        variables.page = parseInt(params.pagination.page, 10) - 1;
-        variables.perPage = parseInt(params.pagination.perPage, 10);
+        variables.page = {
+            number: parseInt(params.pagination.page, 10) - 1,
+            size: parseInt(params.pagination.perPage, 10)
+        }
     }
 
+    // todo support sort
     if (params.sort) {
         variables.sortField = params.sort.field;
         variables.sortOrder = params.sort.order;
