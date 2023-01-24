@@ -5,7 +5,7 @@ export const PetTypeEdit = () => {
         <Edit mutationMode="pessimistic">
             <SimpleForm>
                 <TextInput source="id" disabled/>
-                <TextInput source="name" required={true}/>
+                <TextInput source="name" required={true} autoFocus={true}/>
                 <SelectInput source="defenseStatus" choices={[
                     { id: "NO_DANGER", name: "No danger" },
                     { id: "NEEDS_PROTECTION", name: "Needs protection" },
