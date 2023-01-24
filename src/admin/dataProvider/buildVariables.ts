@@ -6,16 +6,8 @@ import {
     IntrospectionNonNullTypeRef,
     IntrospectionType,
 } from 'graphql';
-import {
-    GET_LIST,
-    GET_ONE,
-    GET_MANY,
-    GET_MANY_REFERENCE,
-    CREATE,
-    UPDATE,
-    DELETE,
-} from 'ra-core';
-import { IntrospectionResult, IntrospectedResource } from 'ra-data-graphql';
+import {CREATE, DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE,} from 'ra-core';
+import {IntrospectedResource, IntrospectionResult} from 'ra-data-graphql';
 
 import getFinalType from './getFinalType';
 import isList from './isList';
@@ -44,7 +36,7 @@ export default (introspectionResults: IntrospectionResult) => (
         }
         case GET_MANY:
             return {
-                filter: { ids: preparedParams.ids },
+                ids: preparedParams.ids
             };
         case GET_MANY_REFERENCE: {
             let variables = buildGetListVariables(introspectionResults)(
@@ -71,7 +63,7 @@ export default (introspectionResults: IntrospectionResult) => (
             };
         case CREATE:
         case UPDATE: {
-            return buildCreateUpdateVariables(
+            return buildCreateUpdateVariables(introspectionResults)(
                 resource,
                 raFetchMethod,
                 preparedParams,
@@ -340,7 +332,7 @@ function camelCaseToUpperSnakeCase(str: string) {
         .join('');
 }
 
-const buildCreateUpdateVariables = (
+const buildCreateUpdateVariables = (introspectionResults: IntrospectionResult) => (
     resource: IntrospectedResource,
     raFetchMethod,
     { id, data }: any,
@@ -348,9 +340,24 @@ const buildCreateUpdateVariables = (
 ) => {
     // Amplicode create/update input param convention
     const inputArg = queryType.args.find(a => a.name === 'input');
-    if (inputArg) {
+    if (inputArg && inputArg.type.kind === 'INPUT_OBJECT') {
+        // need to clean junk fields from the data
+        const inputType = introspectionResults.types.find(t => t.name === (inputArg.type as IntrospectionNamedTypeRef).name);
+        const inputArgAttrs = (inputType as IntrospectionInputObjectType).inputFields;
+        const cleanedData = Object.keys(data).reduce(
+            (acc, key: string) => {
+                if (inputArgAttrs.find(attr => attr.name === key)) {
+                    return {
+                        ...acc,
+                        [key]: data[key],
+                    };
+                }
+                return acc;
+            },
+            { id }
+        )
         return {
-            [inputArg.name]: data
+            [inputArg.name]: cleanedData
         };
     }
 

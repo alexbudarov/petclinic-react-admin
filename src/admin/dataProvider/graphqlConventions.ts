@@ -9,7 +9,7 @@ export const operationNames = {
         return `${decapitalize(removeDtoSuffix(resource.name))}List` // FooDTO --> fooList
     },
     [GET_ONE]: resource => `${decapitalize(removeDtoSuffix(resource.name))}`, // FooDTO --> foo
-    [GET_MANY]: resource => `${resource.name}`, // todo not implemented
+    [GET_MANY]: resource => `${decapitalize(removeDtoSuffix(resource.name))}ListByIds`, // FooDTO --> fooListByIds
     [GET_MANY_REFERENCE]: resource => `${resource.name}`, // todo not implemented
     [CREATE]: resource => `update${removeDtoSuffix(resource.name)}`, // FooDTO --> updateFoo
     [UPDATE]: resource => `update${removeDtoSuffix(resource.name)}`, // FooDTO --> updateFoo

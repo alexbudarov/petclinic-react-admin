@@ -14,6 +14,10 @@ import {PetTypeCreate} from "./pettype/PetTypeCreate";
 import {OwnerEdit} from "./owner/OwnerEdit";
 import {OwnerCreate} from "./owner/OwnerCreate";
 import { QueryClient } from 'react-query';
+import {PetList} from "./pet/PetList";
+import {PetShow} from "./pet/PetShow";
+import {PetEdit} from "./pet/PetEdit";
+import {PetCreate} from "./pet/PetCreate";
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -53,13 +57,26 @@ const App = () => {
                       create={OwnerCreate}
                       edit={OwnerEdit}
                       show={OwnerShow}
-                      options={{ label: 'Owners' }}/>
+                      options={{ label: 'Owner' }}
+                      recordRepresentation={(record) => `${record.firstName} ${record.lastName}`}
+            />
             <Resource name="PetTypeDTO"
                       list={PetTypeList}
                       create={PetTypeCreate}
                       edit={PetTypeEdit}
                       show={PetTypeShow}
-                      options={{ label: 'Pet types' }}/>
+                      options={{ label: 'Pet type' }}
+                      recordRepresentation="name"
+            />
+
+            <Resource name="PetDTO"
+                      list={PetList}
+                      create={PetCreate}
+                      show={PetShow}
+                      edit={PetEdit}
+                      options={{ label: 'Pet' }}
+                      recordRepresentation="identificationNumber"
+            />
         </Admin>
     )
 }

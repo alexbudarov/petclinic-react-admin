@@ -12,7 +12,7 @@ import getFinalType from "./getFinalType";
 import {DELETE, DELETE_MANY, GET_LIST, GET_MANY, GET_MANY_REFERENCE} from "react-admin";
 import {ArgumentNode, TypeNode, VariableDefinitionNode} from "graphql/language";
 import isList from "./isList";
-import {IntrospectionListTypeRef} from "graphql/utilities/getIntrospectionQuery";
+import {IntrospectionListTypeRef, IntrospectionScalarType} from "graphql/utilities/getIntrospectionQuery";
 import {isShallowRequired} from "./isRequired";
 
 
@@ -153,6 +153,19 @@ export const buildFields = (
         );
 
         if (linkedResource) {
+            let idAttribute: string | undefined = 'id'
+            let hasIdField = linkedResource.type.fields.find(f => f.name === 'id');
+
+            if (!hasIdField) {
+                // support IDs with name other than 'id'
+                idAttribute = linkedResource.type.fields.find(f => {
+                    return f.type.kind === 'SCALAR' && (f.type as IntrospectionScalarType).name === 'ID'
+                })?.name
+
+                if (!idAttribute) {
+                    return acc; // skip object attribute if we can't find its ID
+                }
+            }
             return [
                 ...acc,
                 gqlTypes.field(
@@ -160,7 +173,7 @@ export const buildFields = (
                     null,
                     null,
                     null,
-                    gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('id'))])
+                    gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name(idAttribute))])
                 ),
             ];
         }

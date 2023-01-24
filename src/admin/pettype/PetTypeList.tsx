@@ -8,7 +8,7 @@ export const PetTypeList = () => {
                 <TextField source="name" />
                 <TextField source="defenseStatus" />
                 <EditButton />
-                <DeleteWithConfirmButton confirmTitle="Confirm delete pet #%{id}"/>
+                <DeleteWithConfirmButton confirmTitle="Confirm delete pet type #%{id}"/>
             </Datagrid>
         </List>
     );
