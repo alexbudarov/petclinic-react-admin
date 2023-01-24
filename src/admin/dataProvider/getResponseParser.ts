@@ -30,7 +30,7 @@ export default (introspectionResults: IntrospectionResult) => (
         if (items && items.content && Array.isArray(items.content) && items.totalElements) {
             return {
                 data: items.content.map(sanitizeResource),
-                total: items.totalElements
+                total: (items.totalElements as number)
             };
         }
 

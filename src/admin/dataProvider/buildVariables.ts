@@ -192,8 +192,7 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
     let variables: Partial<{
         filter: { [key: string]: any };
         page: { number: number, size: number };
-        sortField: string;
-        sortOrder: string;
+        sort: Array<{ direction: string, property: string }>
     }> = { filter: {} };
     if (params.filter) {
         variables.filter = Object.keys(params.filter).reduce((acc, key) => {
@@ -299,14 +298,47 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
         }
     }
 
-    // todo support sort
+    // Amplicode sorting protocol
+    // sort: [XxxOrderByInput]
+    //
+    // input XxxOrderByInput {
+    //   direction: Direction
+    //   property: XxxOrderByProperty
+    // }
+    //
+    // enum Direction {
+    //   ASC
+    //   DESC
+    // }
+    //
+    // enum XxxOrderByProperty {
+    //   PROPERTY_ONE_IN_CONSTANT_CASE
+    //   PROPERTY_TWO
+    //   PROPERTY_THREE
+    // }
     if (params.sort) {
-        variables.sortField = params.sort.field;
-        variables.sortOrder = params.sort.order;
+        const fieldUpperCase = camelCaseToUpperSnakeCase(params.sort.field);
+        const sortParam = {
+            direction: params.sort.order, // React Admin and Amplicode backend have the same constants
+            property: fieldUpperCase
+        }
+        variables.sort = [sortParam];
     }
 
     return variables;
 };
+
+// from camelCase to UPPER_SNAKE_CASE
+function camelCaseToUpperSnakeCase(str: string) {
+    return str.split('').map((character) => {
+        if (character == character.toUpperCase()) {
+            return '_' + character;
+        } else {
+            return character.toUpperCase();
+        }
+    })
+        .join('');
+}
 
 const buildCreateUpdateVariables = (
     resource: IntrospectedResource,
