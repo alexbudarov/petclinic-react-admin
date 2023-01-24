@@ -1,8 +1,13 @@
-import {Datagrid, EditButton, List, TextField} from "react-admin";
+import {Datagrid, EditButton, List, TextField, TextInput} from "react-admin";
+
+const postFilters = [
+    <TextInput label="First name" source="firstName"/>,
+    <TextInput label="Last name" source="lastName"/>,
+];
 
 export const OwnerList = () => {
     return (
-        <List>
+        <List filters={postFilters}>
             <Datagrid rowClick="show">
                 <TextField source="id" sortable={false}/>
                 <TextField source="firstName" />
