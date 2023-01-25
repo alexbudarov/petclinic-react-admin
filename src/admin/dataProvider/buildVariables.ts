@@ -308,7 +308,7 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
     //   PROPERTY_TWO
     //   PROPERTY_THREE
     // }
-    if (params.sort) {
+    if (params.sort && params.sort.field !== 'id') {
         const fieldUpperCase = camelCaseToUpperSnakeCase(params.sort.field);
         const sortParam = {
             direction: params.sort.order, // React Admin and Amplicode backend have the same constants
