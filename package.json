@@ -15,7 +15,8 @@
     "react": "^18.2.0",
     "react-admin": "^4.7.1",
     "react-dom": "^18.2.0",
-    "@apollo/client": "^3.7.4"
+    "@apollo/client": "^3.7.4",
+    "@react-buddy/ide-toolbox": "^2.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
