@@ -1,5 +1,5 @@
-import {Admin, Resource} from "react-admin";
-import {useEffect, useState} from "react";
+import {AdminContext, AdminUI, defaultI18nProvider, Resource} from "react-admin";
+import React, {useEffect, useState} from "react";
 import buildGraphQLProvider from 'ra-data-graphql';
 import {DataProvider} from "ra-core";
 import defaultBuildQuery from './dataProvider/buildQuery';
@@ -13,11 +13,13 @@ import {PetTypeEdit} from "./pettype/PetTypeEdit";
 import {PetTypeCreate} from "./pettype/PetTypeCreate";
 import {OwnerEdit} from "./owner/OwnerEdit";
 import {OwnerCreate} from "./owner/OwnerCreate";
-import { QueryClient } from 'react-query';
+import {QueryClient} from 'react-query';
 import {PetList} from "./pet/PetList";
 import {PetShow} from "./pet/PetShow";
 import {PetEdit} from "./pet/PetEdit";
 import {PetCreate} from "./pet/PetCreate";
+import {DevSupport} from "@react-buddy/ide-toolbox";
+import {ComponentPreviews, useInitial} from "../dev";
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -32,7 +34,7 @@ const App = () => {
             },
             buildQuery: defaultBuildQuery
         })
-        .then(dp => setDataProvider(dp));
+            .then(dp => setDataProvider(dp));
     }, [setDataProvider]);
 
     if (!dataProvider) {
@@ -51,33 +53,39 @@ const App = () => {
     });
 
     return (
-        <Admin dataProvider={dataProvider} queryClient={queryClient}>
-            <Resource name="OwnerDTO"
-                      list={OwnerList}
-                      create={OwnerCreate}
-                      edit={OwnerEdit}
-                      show={OwnerShow}
-                      options={{ label: 'Owner' }}
-                      recordRepresentation={(record) => `${record.firstName} ${record.lastName}`}
-            />
-            <Resource name="PetTypeDTO"
-                      list={PetTypeList}
-                      create={PetTypeCreate}
-                      edit={PetTypeEdit}
-                      show={PetTypeShow}
-                      options={{ label: 'Pet type' }}
-                      recordRepresentation="name"
-            />
-
-            <Resource name="PetDTO"
-                      list={PetList}
-                      create={PetCreate}
-                      show={PetShow}
-                      edit={PetEdit}
-                      options={{ label: 'Pet' }}
-                      recordRepresentation="identificationNumber"
-            />
-        </Admin>
+        <AdminContext dataProvider={dataProvider}
+                      queryClient={queryClient}
+                      i18nProvider={defaultI18nProvider}>
+            <DevSupport ComponentPreviews={ComponentPreviews}
+                        useInitialHook={useInitial}>
+                <AdminUI>
+                    <Resource name="OwnerDTO"
+                              list={OwnerList}
+                              create={OwnerCreate}
+                              edit={OwnerEdit}
+                              show={OwnerShow}
+                              options={{label: 'Owner'}}
+                              recordRepresentation={(record) => `${record.firstName} ${record.lastName}`}
+                    />
+                    <Resource name="PetTypeDTO"
+                              list={PetTypeList}
+                              create={PetTypeCreate}
+                              edit={PetTypeEdit}
+                              show={PetTypeShow}
+                              options={{label: 'Pet type'}}
+                              recordRepresentation="name"
+                    />
+                    <Resource name="PetDTO"
+                              list={PetList}
+                              create={PetCreate}
+                              show={PetShow}
+                              edit={PetEdit}
+                              options={{label: 'Pet'}}
+                              recordRepresentation="identificationNumber"
+                    />
+                </AdminUI>
+            </DevSupport>
+        </AdminContext>
     )
 }
 
