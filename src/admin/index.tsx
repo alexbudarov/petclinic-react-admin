@@ -20,6 +20,7 @@ import {PetEdit} from "./pet/PetEdit";
 import {PetCreate} from "./pet/PetCreate";
 import {DevSupport} from "@react-buddy/ide-toolbox";
 import {ComponentPreviews, useInitial} from "../dev";
+import {authProvider} from "../authProvider";
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -54,6 +55,7 @@ const App = () => {
 
     return (
         <AdminContext dataProvider={dataProvider}
+                      authProvider={authProvider}
                       queryClient={queryClient}
                       i18nProvider={defaultI18nProvider}>
             <DevSupport ComponentPreviews={ComponentPreviews}
