@@ -1,4 +1,4 @@
-import {AdminContext, AdminUI, defaultI18nProvider, Resource} from "react-admin";
+import {AdminContext, AdminUI, Resource} from "react-admin";
 import React, {useEffect, useState} from "react";
 import buildGraphQLProvider from 'ra-data-graphql';
 import {DataProvider} from "ra-core";
@@ -21,6 +21,10 @@ import {PetCreate} from "./pet/PetCreate";
 import {DevSupport} from "@react-buddy/ide-toolbox";
 import {ComponentPreviews, useInitial} from "../dev";
 import {authProvider} from "../authProvider";
+import { from } from "@apollo/client";
+import {localeLink} from "./links/localeLink";
+import {i18nProvider} from "../i18nProvider";
+
 
 const App = () => {
     const [dataProvider, setDataProvider] = useState<DataProvider>();
@@ -28,7 +32,7 @@ const App = () => {
     useEffect(() => {
         buildGraphQLProvider({
             clientOptions: {
-                link: httpLink
+                link: from([localeLink, httpLink])
             },
             introspection: {
                 operationNames: customOperationNames,
@@ -57,7 +61,7 @@ const App = () => {
         <AdminContext dataProvider={dataProvider}
                       authProvider={authProvider}
                       queryClient={queryClient}
-                      i18nProvider={defaultI18nProvider}>
+                      i18nProvider={i18nProvider}>
             <DevSupport ComponentPreviews={ComponentPreviews}
                         useInitialHook={useInitial}>
                 <AdminUI>
