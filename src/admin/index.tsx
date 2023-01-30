@@ -1,4 +1,4 @@
-import {AdminContext, AdminUI, Resource} from "react-admin";
+import {AdminContext, AdminUI, Resource, CustomRoutes,} from "react-admin";
 import React, {useEffect, useState} from "react";
 import buildGraphQLProvider from 'ra-data-graphql';
 import {DataProvider} from "ra-core";
@@ -24,6 +24,9 @@ import {authProvider} from "../authProvider";
 import { from } from "@apollo/client";
 import {localeLink} from "./links/localeLink";
 import {i18nProvider} from "../i18nProvider";
+import {AdminLayout} from "./AdminLayout";
+import { Route } from "react-router-dom";
+import {MyAddon} from "../addon/MyAddon";
 
 
 const App = () => {
@@ -64,7 +67,7 @@ const App = () => {
                       i18nProvider={i18nProvider}>
             <DevSupport ComponentPreviews={ComponentPreviews}
                         useInitialHook={useInitial}>
-                <AdminUI>
+                <AdminUI layout={AdminLayout}>
                     <Resource name="OwnerDTO"
                               list={OwnerList}
                               create={OwnerCreate}
@@ -89,6 +92,9 @@ const App = () => {
                               options={{label: 'Pet'}}
                               recordRepresentation="identificationNumber"
                     />
+                    <CustomRoutes>
+                        <Route path={'/addon'} element={<MyAddon/>} />
+                    </CustomRoutes>
                 </AdminUI>
             </DevSupport>
         </AdminContext>
