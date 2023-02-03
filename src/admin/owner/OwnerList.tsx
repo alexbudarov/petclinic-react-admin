@@ -1,10 +1,9 @@
-import {Create, List, SimpleForm, TextInput} from "react-admin";
+import {Create, Datagrid, List, ListContextProvider, SimpleForm, TextField, TextInput, useList} from "react-admin";
 
 
 import {ApolloClient, InMemoryCache, ApolloProvider, gql, from} from '@apollo/client';
 import {httpLink} from "../links/httpLink";
 import {useQuery} from "react-query";
-import {DataGrid, GridColDef} from "@mui/x-data-grid";
 import * as React from "react";
 
 const client = new ApolloClient({
@@ -29,35 +28,34 @@ const OWNER_LIST_BY_NAMES_FILTER_OFFSET_PAGE_SORTED = gql(`
 }
 `);
 
-const columns: GridColDef[] = [
-    {field: 'id', headerName: 'ID'},
-    {field: 'firstName', headerName: 'First Name'},
-    {field: 'lastName', headerName: 'Last Name'},
-];
-
 export const OwnerList = () => {
 
-    const {data} = useQuery(
+    const res = useQuery(
         ['OwnerDTO', 'getListCustom'],
         () => {
             return client.query({
                 query: OWNER_LIST_BY_NAMES_FILTER_OFFSET_PAGE_SORTED
             }).then(result => {
-                return {data: result.data.ownerListByNamesFilterOffsetPageSorted.content};
+                return {
+                    data: result.data.ownerListByNamesFilterOffsetPageSorted.content,
+                    isLoading: result.loading
+                };
             })
         }
     );
 
+    const data: any[] | undefined  = res.data?.data;
+    const listContext = useList({ data, isLoading: res.isLoading });
+
     return (
         <List>
-            <div style={{height: 600, width: '100%'}}>
-                <DataGrid
-                    rows={data?.data ?? []}
-                    columns={columns}
-                    pageSize={10}
-                    checkboxSelection
-                />
-            </div>
+        <ListContextProvider value={listContext}>
+            <Datagrid>
+                <TextField source="id" />
+                <TextField source="firstName" />
+                <TextField source="lastName" />
+            </Datagrid>
+        </ListContextProvider>
         </List>
     );
 };
